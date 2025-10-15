@@ -1,0 +1,238 @@
+/* Título acima do login */
+
+.container-title-up-login {
+  padding-bottom: 20px;
+}
+
+.title-up-login {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -10px;
+}
+
+.primera-palavra {
+  font-size: 40px;
+  font-style: italic;
+  font-weight: 700;
+  color: #374151;
+}
+
+.segunda-palavra {
+  font-size: 40px;
+  font-style: italic;
+  font-weight: 700;
+  color: #2f4892;
+}
+
+.frase-title-up-login {
+  color: #6b7280;
+}
+
+/* Container geral */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #18c2ad 0%, #1aa5b6 40%, #2f80ed 100%);
+}
+
+/* container do login */
+.container-login {
+  display: flex;
+  flex-direction: column; /* Coloca tudo em coluna */
+  align-items: center; /* Centraliza os elementos dentro */
+  background-color: #fff;
+  padding: 40px 32px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Título "Login" */
+.container-login h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 24px;
+}
+
+/* Formulário */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Label + input */
+.login-form label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.label-title {
+  font-weight: 400;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  &::before {
+    content: " *";
+    color: #ef4444;
+    font-weight: 900;
+  }
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
+    background: #fff;
+  }
+}
+
+/* Botão Entrar */
+.login-button {
+  background-color: #14b8a6;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #109e93;
+  }
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    outline: none;
+    box-shadow: none;
+    border: none;
+  }
+
+  &:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+  }
+}
+
+.criar-conta-button {
+  background-color: #94a3b85f;
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  margin-top: 10px;
+  height: 43px;
+  cursor: pointer;
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    outline: none;
+    box-shadow: none;
+    border: none;
+  }
+
+  &:hover {
+    background-color: #94a3b8a0;
+  }
+}
+
+.container-esqueceu-senha {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 30px;
+}
+
+.container-esqueceu-senha p {
+  color: #0f172a;
+  margin: 0;
+}
+
+.esqueceu-senha-button {
+  background: none;
+  border: none;
+  color: #0ea5e9;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  margin-left: 1%;
+
+  /* Remove completamente os estilos de foco */
+  outline: none;
+  box-shadow: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    outline: none;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* Erro */
+.login-error {
+  color: #dc2626;
+  font-size: 14px;
+  margin: 4px 0 10px;
+}
+
+.login-form input {
+  background: #fff;
+  color: #0f172a;
+  caret-color: #0f172a;
+}
+
+.login-form input::placeholder {
+  color: #94a3b8;
+}
+
+.button-global {
+  background-color: #14b8a6;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #109e93;
+  }
+
+  &:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+  }
+}
