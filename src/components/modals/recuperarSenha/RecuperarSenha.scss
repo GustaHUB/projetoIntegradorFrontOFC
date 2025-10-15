@@ -1,6 +1,8 @@
 /* Escopo do modal */
 .recuperar-senha-modal {
-  .ant-modal-content { background: #fff; }
+  .ant-modal-content {
+    background: #fff;
+  }
 
   /* Cabeçalho */
   .rs-header {
@@ -46,12 +48,14 @@
       background: #f8fafc;
       border-color: #e2e8f0;
 
-      &::placeholder { color: #94a3b8; }
+      &::placeholder {
+        color: #94a3b8;
+      }
       &:focus,
       &:focus-within {
         background: #fff;
         border-color: #14b8a6;
-        box-shadow: 0 0 0 3px rgba(20,184,166,.25);
+        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.25);
       }
     }
   }
@@ -62,7 +66,9 @@
     background: #14b8a6;
     border: none;
 
-    &:hover { background: #109e93; }
+    &:hover {
+      background-color: #109e93 !important;
+    }
   }
 
   /* Link "Voltar para o login" */
@@ -78,7 +84,14 @@
     font-size: 16px;
     cursor: pointer;
 
-    &:hover { text-decoration: underline; }
-    &:focus, &:focus-visible, &:active { outline: none; box-shadow: none; }
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus,
+    &:focus-visible,
+    &:active {
+      outline: none;
+      box-shadow: none;
+    }
   }
 }

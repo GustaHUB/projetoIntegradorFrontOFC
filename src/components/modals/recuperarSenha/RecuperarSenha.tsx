@@ -1,13 +1,13 @@
 import { Modal, Input, Button } from "antd";
 import { useState } from "react";
 
-import './RecuperarSenha.scss'
+import "./RecuperarSenha.scss";
 
 type RecuperarSenhaProps = {
   open: boolean;
   onClose: () => void;
   onSend?: (email: string) => void;
-  onBackToLogin?: () => void; // opcional: para clicar no link
+  onBackToLogin?: () => void;
 };
 
 export default function RecuperarSenha({
@@ -17,8 +17,24 @@ export default function RecuperarSenha({
   onBackToLogin,
 }: RecuperarSenhaProps) {
   const [emailRecuperarSenha, setEmailRecuperarSenha] = useState("");
+  const [error, setError] = useState("");
 
   const handleEnviar = () => {
+    // validação simples
+    if (!emailRecuperarSenha.trim()) {
+      setError("Por favor, informe seu e-mail.");
+      return;
+    }
+
+    // validação de formato de e-mail
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailRecuperarSenha)) {
+      setError("Informe um e-mail válido.");
+      return;
+    }
+
+    // se estiver tudo certo
+    setError("");
     onSend?.(emailRecuperarSenha);
     onClose();
   };
@@ -31,7 +47,7 @@ export default function RecuperarSenha({
       centered
       width={620}
       maskClosable={false}
-      title={null} // vamos customizar o cabeçalho
+      title={null}
       rootClassName="recuperar-senha-modal"
       styles={{
         content: {
@@ -41,7 +57,7 @@ export default function RecuperarSenha({
         },
       }}
     >
-      {/* Cabeçalho customizado */}
+      {/* Cabeçalho */}
       <div className="rs-header">
         <h2>Recuperar senha</h2>
         <p>Recupere sua senha informando o seu e-mail cadastrado</p>
@@ -53,12 +69,17 @@ export default function RecuperarSenha({
         <Input
           type="email"
           value={emailRecuperarSenha}
-          onChange={(e) => setEmailRecuperarSenha(e.target.value)}
+          onChange={(e) => {
+            setEmailRecuperarSenha(e.target.value);
+            if (error) setError(""); // limpa erro ao digitar
+          }}
           required
           inputMode="email"
           placeholder="Ex: exemplo.teste@email.com"
           size="large"
+          status={error ? "error" : ""}
         />
+        {error && <p className="rs-error">{error}</p>}
       </label>
 
       {/* Botão enviar */}
