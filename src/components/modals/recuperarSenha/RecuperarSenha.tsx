@@ -1,41 +1,37 @@
-import { Modal, Input, Button } from "antd";
 import { useState } from "react";
 
+//componentes antd
+import { Modal, Input, Button } from "antd";
+
 import "./RecuperarSenha.scss";
+import { emailRegex } from "../../../utils/Masks";
 
 type RecuperarSenhaProps = {
   open: boolean;
   onClose: () => void;
-  onSend?: (email: string) => void;
   onBackToLogin?: () => void;
 };
 
 export default function RecuperarSenha({
   open,
   onClose,
-  onSend,
   onBackToLogin,
 }: RecuperarSenhaProps) {
   const [emailRecuperarSenha, setEmailRecuperarSenha] = useState("");
   const [error, setError] = useState("");
 
   const handleEnviar = () => {
-    // validação simples
     if (!emailRecuperarSenha.trim()) {
       setError("Por favor, informe seu e-mail.");
       return;
     }
 
-    // validação de formato de e-mail
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailRecuperarSenha)) {
       setError("Informe um e-mail válido.");
       return;
     }
 
-    // se estiver tudo certo
     setError("");
-    onSend?.(emailRecuperarSenha);
     onClose();
   };
 
@@ -57,13 +53,11 @@ export default function RecuperarSenha({
         },
       }}
     >
-      {/* Cabeçalho */}
       <div className="rs-header">
         <h2>Recuperar senha</h2>
         <p>Recupere sua senha informando o seu e-mail cadastrado</p>
       </div>
 
-      {/* Campo */}
       <label className="rs-field">
         <span className="rs-label">E-mail</span>
         <Input
@@ -71,7 +65,7 @@ export default function RecuperarSenha({
           value={emailRecuperarSenha}
           onChange={(e) => {
             setEmailRecuperarSenha(e.target.value);
-            if (error) setError(""); // limpa erro ao digitar
+            if (error) setError(""); 
           }}
           required
           inputMode="email"
@@ -82,7 +76,6 @@ export default function RecuperarSenha({
         {error && <p className="rs-error">{error}</p>}
       </label>
 
-      {/* Botão enviar */}
       <Button
         type="primary"
         size="large"
@@ -93,7 +86,6 @@ export default function RecuperarSenha({
         Enviar
       </Button>
 
-      {/* Link voltar */}
       <button
         type="button"
         className="rs-back-link"

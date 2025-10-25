@@ -1,10 +1,8 @@
-/* Escopo do modal */
 .recuperar-senha-modal {
   .ant-modal-content {
     background: #fff;
   }
 
-  /* Cabeçalho */
   .rs-header {
     text-align: center;
     margin-bottom: 12px;
@@ -23,7 +21,6 @@
     }
   }
 
-  /* Campo */
   .rs-field {
     display: flex;
     flex-direction: column;
@@ -37,7 +34,6 @@
       position: relative;
     }
 
-    /* asterisco vermelho em campos required */
     .rs-label::before {
       content: " *";
       color: #ef4444;
@@ -60,7 +56,6 @@
     }
   }
 
-  /* Botão enviar full width */
   .rs-submit {
     margin-top: 12px;
     background: #14b8a6;
@@ -71,7 +66,6 @@
     }
   }
 
-  /* Link "Voltar para o login" */
   .rs-back-link {
     display: block;
     width: 100%;

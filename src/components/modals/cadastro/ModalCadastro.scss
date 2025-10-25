@@ -11,7 +11,7 @@
 
     h2 {
       margin: 0;
-      font-size: 28px; /* menor */
+      font-size: 28px;
       font-weight: 800;
       color: #0f172a;
     }
@@ -20,7 +20,7 @@
   .cad-toggle {
     display: flex;
     align-items: center;
-    justify-content: center; /* corrigido */
+    justify-content: center;
     gap: 10px;
 
     label {
@@ -48,26 +48,38 @@
     .ant-input,
     .ant-select-selector,
     .ant-picker {
-      height: 36px; /* inputs mais baixos */
+      height: 36px;
       border-radius: 6px;
-      background: #f9fafb;
+      background: white;
       border-color: #e2e8f0;
 
       &::placeholder {
-        color: #94a3b8;
+        color: #9ca3af;
       }
     }
 
     .ant-input:focus,
     .ant-select-focused .ant-select-selector,
-    .ant-picker-focused {
+    .ant-picker-focused,
+    .ant-input-affix-wrapper {
       background: #fff;
-      border-color: #14b8a6 !important;
-      box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.25);
+      border-color: #e2e8f0 !important;
     }
   }
 
-  /* Observação e checkbox mais próximos */
+  .ant-form-item {
+    margin-bottom: 1px !important;
+  }
+
+  .cadastro-modal .ant-form-item {
+    margin-bottom: 12px !important;
+  }
+
+  .ant-picker-input > input::placeholder {
+    color: #9ca3af !important;
+    opacity: 1;
+  }
+
   .cad-note {
     margin: 12px 0 6px;
     font-size: 13px;
@@ -94,10 +106,12 @@
     border: none;
     font-weight: 700;
     margin: 20px auto 0;
-    width: 40% !important;
+    width: 50% !important;
+    display: flex;
+    justify-content: center;
 
     &:hover {
-      background: #109e93;
+      background: #109e93 !important;
     }
 
     &:disabled {

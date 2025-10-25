@@ -1,33 +1,62 @@
-import RecuperarSenha from "../../components/modals/recuperarSenha/RecuperarSenha";
-
 import { useState } from "react";
+
+// antd
+import { Form, Input, Button } from "antd";
+
+// rotas
 import { useNavigate } from "react-router-dom";
+
+// apis
+import { loginUsuario } from "../../services/apiInterna/FluxoIdentificacao";
+
+// modals
+import CadastroModal from "../../components/modals/cadastro/ModalCadastro";
+import RecuperarSenha from "../../components/modals/recuperarSenha/RecuperarSenha";
 
 import "antd/dist/reset.css";
 import "./Login.scss";
-import CadastroModal from "../../components/modals/cadastro/ModalCadastro";
+import { showMessage } from "../../components/messageHelper/ShowMessage";
 
 function Login() {
   const [userLogin, setUserLogin] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [erro, setErro] = useState("");
 
   const [isRecuperarOpen, setIsRecuperarOpen] = useState(false);
   const [isCadastroOpen, setIsCadastroOpen] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!userLogin) {
+      showMessage("Informe seu e-mail.", "warning");
+      return;
+    }
+    if (!userPassword) {
+      showMessage("Informe sua senha.", "warning");
+      return;
+    }
+
     setLoading(true);
-    setErro("");
 
     try {
-      console.log("Login:", userLogin, userPassword);
-      navigate("/home");
-    } catch (error: unknown) {
-      console.log("Erro ao logar");
+      const response = await loginUsuario({
+        email: userLogin,
+        senha: userPassword,
+      });
+
+      if (response.data?.token) {
+        localStorage.setItem("token", response.data.token);
+        showMessage("Login realizado com sucesso!", "success");
+        navigate("/home", { replace: true });
+      } else {
+        showMessage("Login inválido", "error");
+      }
+    } catch (error: any) {
+      const msg = error?.message || "Erro ao fazer login.";
+      showMessage(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -51,71 +80,73 @@ function Login() {
         <div className="container-login">
           <h1>Login</h1>
 
-          <form className="login-form" onSubmit={handleSubmit}>
-            <label>
-              <span className="label-title">Login</span>
-              <input
+          <Form
+            className="login-form"
+            layout="vertical"
+            onSubmitCapture={handleSubmit}
+          >
+            <Form.Item label="Login" name="email">
+              <Input
                 type="email"
                 value={userLogin}
                 onChange={(e) => setUserLogin(e.target.value)}
-                required
-                inputMode="email"
-                placeholder="Ex: exemplo@email.com"
+                placeholder="exemplo@email.com"
+                size="large"
               />
-            </label>
+            </Form.Item>
 
-            <label>
-              <span className="label-title">Senha</span>
-              <input
-                type="password"
+            <Form.Item label="Senha" name="senha">
+              <Input.Password
                 value={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
-                required
                 placeholder="Digite sua senha"
+                size="large"
+                autoComplete="false"
               />
-            </label>
+            </Form.Item>
 
-            {erro && (
-              <p className="login-error" aria-live="polite">
-                {erro}
-              </p>
-            )}
+            <Button
+              className="login-button"
+              loading={loading}
+              htmlType="submit"
+              type="primary"
+              size="large"
+              block
+              style={{ marginTop: 30 }}
+            >
+              Entrar
+            </Button>
 
-            <button className="login-button" disabled={loading} type="submit">
-              {loading ? "Entrando..." : "Entrar"}
-            </button>
-
-            <button
+            <Button
               className="criar-conta-button"
               disabled={loading}
               onClick={() => setIsCadastroOpen(true)}
-              type="button"
+              type="default"
+              size="large"
+              block
             >
               Criar conta
-            </button>
-            <CadastroModal
-              open={isCadastroOpen}
-              onClose={() => setIsCadastroOpen(false)}
-              onSubmit={(dados) => console.log("Cadastro:", dados)}
-            />
+            </Button>
+
             <div className="container-esqueceu-senha">
               <p>Esqueceu a senha?</p>
-              <button
+              <Button
                 className="esqueceu-senha-button"
-                type="button"
+                type="link"
                 onClick={() => setIsRecuperarOpen(true)}
               >
                 Clique aqui
-              </button>
+              </Button>
             </div>
-            <RecuperarSenha
-              open={isRecuperarOpen}
-              onClose={() => setIsRecuperarOpen(false)}
-              onSend={(email: any) =>
-                console.log("Enviar recuperação para:", email)
-              }
-            />
-          </form>
+          </Form>
+          <CadastroModal
+            open={isCadastroOpen}
+            onClose={() => setIsCadastroOpen(false)}
+          />
+          <RecuperarSenha
+            open={isRecuperarOpen}
+            onClose={() => setIsRecuperarOpen(false)}
+          />
         </div>
       </div>
     </>

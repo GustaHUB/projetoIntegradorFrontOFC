@@ -1,8 +1,10 @@
+//CADASTRO
+
 export interface ViaCepAddress {
   cep: string;
   logradouro: string;
   bairro: string;
-  localidade: string; 
+  localidade: string;
   uf: string;
   ibge?: string;
   gia?: string;
@@ -11,28 +13,29 @@ export interface ViaCepAddress {
   erro?: boolean;
 }
 
-export interface CadastroPayload {
-  nome: string;
-  sobrenome: string;
-  nascimento: string | Date;
-  celular: string;
-  email: string;
-  cpf: string;
-  genero: string;
-  senha: string;
-  senha2?: string;
-  cep: string;
-  logradouro: string;
-  complemento?: string;
-  bairro: string;
-  numero: string;
-  cidade: string;
-  estado: string;
-  tipoUsuario: string; 
-}
 
-export interface ApiResponse {
+export interface CadastroResponse {
   code: number;
   message: string;
-  data?: any;
+  data?: {
+    token: string;
+  };
 }
+
+//LOGIN
+
+export interface LoginPayload {
+  email: string;
+  senha: string;
+}
+
+export interface LoginResponse {
+  message?: string;
+  data?: {
+    token: string;
+  };
+  code?: number;
+}
+
+// SALVAR DADOS
+
