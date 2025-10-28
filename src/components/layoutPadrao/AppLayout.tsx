@@ -69,6 +69,10 @@ export default function AppLayout() {
     { key: "logout", label: "Sair", danger: true, onClick: handleLogout },
   ];
 
+  const navigateToHome = () => {
+    navigate("/home");
+  };
+
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f7fa" }}>
       <Sider
@@ -110,17 +114,26 @@ export default function AppLayout() {
         <Header className="app-header">
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Button
-            className="button-abrir-menu"
+              className="button-abrir-menu"
               type="text"
               onClick={() => setCollapsed((c) => !c)}
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               style={{ fontSize: 18 }}
             />
 
-            <img className="logo" src={logo} alt="logo" style={{ height: 28 }} />
+            <img
+              className="logo"
+              src={logo}
+              alt="logo"
+              style={{ height: 28 }}
+            />
             <div className="title-up-header">
-              <span className="primera-palavra-header">Med</span>
-              <span className="segunda-palavra-header">Exame</span>
+              <span onClick={navigateToHome} className="primera-palavra-header">
+                Med
+              </span>
+              <span onClick={navigateToHome} className="segunda-palavra-header">
+                Exame
+              </span>
             </div>
           </div>
 
