@@ -1,10 +1,18 @@
 import { useState } from "react";
+
+//componentes antd
 import { Modal, Button } from "antd";
 
-import "./DesativarConta.scss";
+//api
 import { desativarConta } from "../../../services/apiInterna/FluxoIdentificacao";
+
+//componentes de mensagem
 import { showMessage } from "../../messageHelper/ShowMessage";
+
+//rotas
 import { useNavigate } from "react-router-dom";
+
+import "./DesativarConta.scss";
 
 type DesativarContaProps = {
   open: boolean;
@@ -18,6 +26,7 @@ export default function DesativarContaModal({
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // FUNÇÃO PARA DESATIVAR CONTA
   const handleConfirmDesativar = async () => {
     try {
       setLoading(true);

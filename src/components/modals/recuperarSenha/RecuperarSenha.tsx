@@ -20,6 +20,7 @@ export default function RecuperarSenha({
   const [emailRecuperarSenha, setEmailRecuperarSenha] = useState("");
   const [error, setError] = useState("");
 
+  // FUNÇÃO PARA ENVIAR E-MAIL
   const handleEnviar = () => {
     if (!emailRecuperarSenha.trim()) {
       setError("Por favor, informe seu e-mail.");

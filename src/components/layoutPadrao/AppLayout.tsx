@@ -13,10 +13,6 @@ import {
 
 //icons
 import {
-  HomeOutlined,
-  IdcardOutlined,
-  SolutionOutlined,
-  SettingOutlined,
   UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -28,6 +24,9 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 //imagens
 import logo from "../../assets/health-and-care.png";
 
+//constants
+import { items } from "../../utils/Constants";
+
 import "./AppLayout.scss";
 
 const { Header, Sider, Content, Footer } = Layout;
@@ -36,12 +35,15 @@ const { Search } = Input;
 const SIDER_WIDTH = 220;
 
 export default function AppLayout() {
-  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [collapsed, setCollapsed] = useState(false);
+
   const isLogged = Boolean(localStorage.getItem("token"));
   const userName = localStorage.getItem("primeiroNomeUsuario") || "Usuário";
 
+  // FUNÇÃO PARA ABRIR MENU LATERAL NO CLICK E TIRAR A AÇÃO DE ABRIR/FECHAR AO CLICAR EM ALGUM ELEMENTO DO MENU
   const abrirMenuLateral = (e: any) => {
     const el = e.target as HTMLElement;
     const clickedInsideMenu = el.closest(".ant-menu");
@@ -50,34 +52,9 @@ export default function AppLayout() {
     setCollapsed((c) => !c);
   };
 
-  const items = [
-    { key: "/home", icon: <HomeOutlined />, label: "Home" },
-    {
-      key: "exames",
-      icon: <IdcardOutlined />,
-      label: "Exames",
-      children: [
-        { key: "/exames/seusExames", label: "Seus Exames" },
-        { key: "/exames/cadastrar", label: "Cadastrar Exames" },
-      ],
-    },
-    {
-      key: "/medicos",
-      icon: <SolutionOutlined />,
-      label: "Médicos com acesso",
-    },
-    { key: "/perfil", icon: <UserOutlined />, label: "Perfil" },
-    {
-      key: "/configuracoes",
-      icon: <SettingOutlined />,
-      label: "Configurações",
-    },
-  ];
-
+  // FUNÇÃO PARA DESLOGAR E LIMPAR LOCALSTORAGE
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("primeiroNomeUsuario");
-    localStorage.removeItem("ultimoNomeUsuario");
+    localStorage.clear();
     navigate("/");
     window.location.reload();
   };

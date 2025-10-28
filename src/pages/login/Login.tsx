@@ -20,13 +20,14 @@ import { showMessage } from "../../components/messageHelper/ShowMessage";
 function Login() {
   const [userLogin, setUserLogin] = useState("");
   const [userPassword, setUserPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
+  const [loading, setLoading] = useState(false);
   const [isRecuperarOpen, setIsRecuperarOpen] = useState(false);
   const [isCadastroOpen, setIsCadastroOpen] = useState(false);
 
   const navigate = useNavigate();
 
+  // FUNÇÃO PARA LOGAR
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

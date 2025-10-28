@@ -31,7 +31,7 @@ import {
 
 import "./ModalCadastro.scss";
 import { showMessage } from "../../messageHelper/ShowMessage";
-import { isValidCPF } from "../../../utils/utlidades";
+import { isValidCPF } from "../../../utils/Utilidades";
 
 type CadastroModalProps = {
   open: boolean;
@@ -40,16 +40,21 @@ type CadastroModalProps = {
 
 export default function CadastroModal({ open, onClose }: CadastroModalProps) {
   const [form] = Form.useForm();
+
   const [showPass, setShowPass] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const [agree, setAgree] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [cepError, setCepError] = useState<string>();
   const [tipoUsuario, setTipoUsuario] = useState<string>();
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const generoMap: Record<string, number> = { m: 1, f: 2, o: 3, n: 4 };
 
+  // FUNÇÃO PARA BUSCAR ENDEREÇO DO CEP
   const handleCepChange = (raw: string) => {
     const masked = maskCEP(raw);
     form.setFieldsValue({ cep: masked });
@@ -78,6 +83,18 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
     }
   };
 
+  // FUNÇÃO PARA VALIDAR CAMPOS DO FORM, VERIFICA SE TEM ALGUM CAMPO COM ERRO.
+  const onFinishFailed = () => {
+    showMessage("Preencha os campos obrigatórios destacados.", "warning");
+    form.scrollToField(
+      form.getFieldsError().find((f) => f.errors.length)?.name ?? [],
+      {
+        block: "center",
+      }
+    );
+  };
+
+  // FUNÇÃO PARA CADASTRAR
   const handleSubmit = async (values: any) => {
     if (!agree) {
       showMessage("Você precisa aceitar os termos para continuar.", "warning");
@@ -120,22 +137,15 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
     };
 
     try {
+      setLoading(true);
       await cadastrarUsuario(payload as any);
       showMessage("Cadastro realizado com sucesso!", "success");
       onClose();
     } catch (err: any) {
       showMessage(err?.message || "Erro ao cadastrar usuário.", "error");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const onFinishFailed = () => {
-    showMessage("Preencha os campos obrigatórios destacados.", "warning");
-    form.scrollToField(
-      form.getFieldsError().find((f) => f.errors.length)?.name ?? [],
-      {
-        block: "center",
-      }
-    );
   };
 
   return (
@@ -466,6 +476,7 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
           size="large"
           className="cad-submit"
           disabled={!agree}
+          loading={loading}
           htmlType="submit"
         >
           Cadastrar

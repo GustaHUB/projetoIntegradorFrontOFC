@@ -36,26 +36,37 @@ import {
   onlyDigits,
 } from "../../utils/Masks";
 
+//constantes
+import {
+  ESTADOS_BR,
+  GENEROS,
+  TIPOS_SANGUINEOS,
+  SUG_DOENCAS,
+  SUG_ALERGIAS,
+  SUG_MEDICACAO,
+} from "../../utils/Constants";
+
 import "./Perfil.scss";
 import { showMessage } from "../../components/messageHelper/ShowMessage";
 import { getAddressByCep } from "../../services/apiExterna/viaCep";
 import {
-  isValidCEP,
   isValidCPF,
   isValidPhoneBR,
   parseMaybeJsonArray,
-} from "../../utils/utlidades";
+} from "../../utils/Utilidades";
 import DesativarContaModal from "../../components/modals/desativarConta/DesativarConta";
 
 export default function Perfil() {
   const [form] = Form.useForm();
-  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
+
   const [loading, setLoading] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
-  const [cepError, setCepError] = useState<string>();
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const [openModalDesativarConta, setOpenModalDesativarConta] = useState(false);
+
+  const [cepError, setCepError] = useState<string>();
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const primeiroNomeUsuario = localStorage.getItem("primeiroNomeUsuario");
   const ultimoNomeUsuario = localStorage.getItem("ultimoNomeUsuario");
@@ -63,81 +74,10 @@ export default function Perfil() {
   const { Title, Paragraph } = Typography;
   const { TextArea } = Input;
 
-  const generos = [
-    { label: "Masculino", value: 1 },
-    { label: "Feminino", value: 2 },
-    { label: "Outro", value: 3 },
-    { label: "Prefiro não informar", value: 4 },
-  ];
-
-  const tiposSanguineos = [
-    "O+",
-    "O-",
-    "A+",
-    "A-",
-    "B+",
-    "B-",
-    "AB+",
-    "AB-",
-  ].map((t) => ({ label: t, value: t }));
-
-  const SUG_DOENCAS = [
-    "Hipertensão arterial",
-    "Diabetes mellitus tipo 2",
-    "Asma",
-    "DPOC (doença pulmonar obstrutiva crônica)",
-    "Doença cardíaca isquêmica",
-    "Insuficiência cardíaca",
-    "Dislipidemia (colesterol alto)",
-    "Hipotireoidismo",
-    "Artrite/Artrose (osteoartrite)",
-    "Enxaqueca",
-    "Doença renal crônica",
-    "Depressão",
-    "Transtorno de ansiedade",
-    "Apneia do sono",
-  ];
-
-  const SUG_ALERGIAS = [
-    "Penicilina",
-    "Amoxicilina",
-    "Cefalosporinas",
-    "Dipirona (metamizol)",
-    "AAS (aspirina)",
-    "Ibuprofeno",
-    "AINEs (anti-inflamatórios)",
-    "Iodo / contraste iodado",
-    "Látex",
-    "Frutos do mar / mariscos",
-    "Amendoim",
-    "Proteína do leite",
-    "Ovo",
-    "Picada de inseto",
-  ];
-
-  const SUG_MEDICACAO = [
-    "Losartana 50 mg",
-    "Enalapril 10 mg",
-    "Hidroclorotiazida 25 mg",
-    "Metformina 850 mg",
-    "Insulina NPH",
-    "Atorvastatina 20 mg",
-    "Sinvastatina 20 mg",
-    "Levotiroxina 50 mcg",
-    "Omeprazol 20 mg",
-    "Sertralina 50 mg",
-    "Fluoxetina 20 mg",
-    "Paracetamol 750 mg",
-    "Dipirona 500 mg",
-    "Ibuprofeno 400 mg",
-    "Loratadina 10 mg",
-    "Cetirizina 10 mg",
-    "Salbutamol (spray)",
-    "Budesonida (inalatório)",
-  ];
-
+  // CONVERTE ARRAY SIMPLES PARA {label: "", value: ""}
   const toOptions = (arr: string[]) => arr.map((v) => ({ label: v, value: v }));
 
+  // FUNÇÃO PARA EDITAR DADOS
   const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
@@ -187,6 +127,7 @@ export default function Perfil() {
     }
   };
 
+  // FUNÇÃO PARA VALIDAR CAMPOS DO FORM, VERIFICA SE TEM ALGUM CAMPO COM ERRO.
   const onFinishFailed = () => {
     showMessage("Preencha os campos obrigatórios destacados.", "warning");
     form.scrollToField(
@@ -197,6 +138,36 @@ export default function Perfil() {
     );
   };
 
+  // FUNÇÃO PARA BUSCAR ENDEREÇO DO CEP
+  const handleCepChange = (raw: string) => {
+    const masked = maskCEP(raw);
+    form.setFieldsValue({ cep: masked });
+    setCepError(undefined);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const numeric = masked.replace(/\D/g, "");
+    if (numeric.length === 8) {
+      debounceRef.current = setTimeout(async () => {
+        setLoadingCep(true);
+        try {
+          const data = await getAddressByCep(numeric);
+          form.setFieldsValue({
+            cep: maskCEP(data.cep),
+            logradouro: data.logradouro || form.getFieldValue("logradouro"),
+            bairro: data.bairro || form.getFieldValue("bairro"),
+            cidade: data.localidade || form.getFieldValue("cidade"),
+            estado: data.uf || form.getFieldValue("estado"),
+          });
+        } catch (err: any) {
+          setCepError(err?.message || "Erro ao consultar CEP");
+        } finally {
+          setLoadingCep(false);
+        }
+      }, 800);
+    }
+  };
+
+  // CHAMA SEMPRE QUE ENTRAR NA TELA PARA BUSCAR OS DADOS DO USUÁRIO E POPULAR OS CAMPOS
   useEffect(() => {
     async function carregarDados() {
       try {
@@ -234,34 +205,6 @@ export default function Perfil() {
     }
     carregarDados();
   }, []);
-
-  const handleCepChange = (raw: string) => {
-    const masked = maskCEP(raw);
-    form.setFieldsValue({ cep: masked });
-    setCepError(undefined);
-
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    const numeric = masked.replace(/\D/g, "");
-    if (numeric.length === 8) {
-      debounceRef.current = setTimeout(async () => {
-        setLoadingCep(true);
-        try {
-          const data = await getAddressByCep(numeric);
-          form.setFieldsValue({
-            cep: maskCEP(data.cep),
-            logradouro: data.logradouro || form.getFieldValue("logradouro"),
-            bairro: data.bairro || form.getFieldValue("bairro"),
-            cidade: data.localidade || form.getFieldValue("cidade"),
-            estado: data.uf || form.getFieldValue("estado"),
-          });
-        } catch (err: any) {
-          setCepError(err?.message || "Erro ao consultar CEP");
-        } finally {
-          setLoadingCep(false);
-        }
-      }, 800);
-    }
-  };
 
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
@@ -440,7 +383,7 @@ export default function Perfil() {
                 </Col>
                 <Col xs={24} sm={12} md={6}>
                   <Form.Item label="Gênero" name="genero">
-                    <Select options={generos} />
+                    <Select options={GENEROS} />
                   </Form.Item>
                 </Col>
 
@@ -489,37 +432,7 @@ export default function Perfil() {
                 </Col>
                 <Col xs={24} sm={12} md={4}>
                   <Form.Item label="Estado" name="estado">
-                    <Select
-                      options={[
-                        "AC",
-                        "AL",
-                        "AP",
-                        "AM",
-                        "BA",
-                        "CE",
-                        "DF",
-                        "ES",
-                        "GO",
-                        "MA",
-                        "MT",
-                        "MS",
-                        "MG",
-                        "PA",
-                        "PB",
-                        "PR",
-                        "PE",
-                        "PI",
-                        "RJ",
-                        "RN",
-                        "RS",
-                        "RO",
-                        "RR",
-                        "SC",
-                        "SP",
-                        "SE",
-                        "TO",
-                      ].map((uf) => ({ label: uf, value: uf }))}
-                    />
+                    <Select options={toOptions(ESTADOS_BR)} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -638,7 +551,13 @@ export default function Perfil() {
                 </Col>
                 <Col xs={24} sm={8}>
                   <Form.Item label="Tipo sanguíneo" name="tipoSanguineo">
-                    <Select options={tiposSanguineos} placeholder="Ex.: O+" />
+                    <Select
+                      options={TIPOS_SANGUINEOS.map((t) => ({
+                        label: t,
+                        value: t,
+                      }))}
+                      placeholder="Ex.: O+"
+                    />
                   </Form.Item>
                 </Col>
 
