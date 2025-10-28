@@ -110,13 +110,14 @@ export default function AppLayout() {
         <Header className="app-header">
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Button
+            className="button-abrir-menu"
               type="text"
               onClick={() => setCollapsed((c) => !c)}
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               style={{ fontSize: 18 }}
             />
 
-            <img src={logo} alt="logo" style={{ height: 28 }} />
+            <img className="logo" src={logo} alt="logo" style={{ height: 28 }} />
             <div className="title-up-header">
               <span className="primera-palavra-header">Med</span>
               <span className="segunda-palavra-header">Exame</span>
