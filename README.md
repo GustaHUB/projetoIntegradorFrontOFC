@@ -40,10 +40,3 @@ npm run dev
 - Por enquanto não tem
 
 
-## Solução de problemas (FAQ)
-
-- **Erro de versão do Node/Vite**: atualize para **Node >= 18** (recomendado 20 LTS).
-- **Porta em uso**: rode `npm run dev -- --port 5174` (ou outra porta livre).
-- **Estilos/Sass não aplicando**: garanta que `sass` está instalado (já está no `package.json`) e que os imports `*.scss` estão corretos.
-- **Imports absolutos/paths**: confira opções em `tsconfig*.json` caso deseje alias de paths.
-
