@@ -14,8 +14,10 @@ import {
 //icons
 import {
   HomeOutlined,
-  UserOutlined,
   IdcardOutlined,
+  SolutionOutlined,
+  SettingOutlined,
+  UserOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from "@ant-design/icons";
@@ -38,7 +40,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isLogged = Boolean(localStorage.getItem("token"));
-  const userName = localStorage.getItem("userName") || "Usuário";
+  const userName = localStorage.getItem("primeiroNomeUsuario") || "Usuário";
 
   const abrirMenuLateral = (e: any) => {
     const el = e.target as HTMLElement;
@@ -59,12 +61,23 @@ export default function AppLayout() {
         { key: "/exames/cadastrar", label: "Cadastrar Exames" },
       ],
     },
+    {
+      key: "/medicos",
+      icon: <SolutionOutlined />,
+      label: "Médicos com acesso",
+    },
     { key: "/perfil", icon: <UserOutlined />, label: "Perfil" },
+    {
+      key: "/configuracoes",
+      icon: <SettingOutlined />,
+      label: "Configurações",
+    },
   ];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("userName");
+    localStorage.removeItem("primeiroNomeUsuario");
+    localStorage.removeItem("ultimoNomeUsuario");
     navigate("/");
     window.location.reload();
   };
@@ -86,7 +99,6 @@ export default function AppLayout() {
         collapsible
         collapsed={collapsed}
         trigger={null}
-        // onCollapse={(v) => setCollapsed(v)}
         width={SIDER_WIDTH}
         collapsedWidth={60}
         breakpoint="sm"
@@ -99,6 +111,8 @@ export default function AppLayout() {
           zIndex: 200,
         }}
         onClick={abrirMenuLateral}
+        // onMouseEnter={() => setCollapsed(false)}
+        // onMouseLeave={() => setCollapsed(true)}
       >
         <div className="titulo-menu-lateral">
           {collapsed ? "ME" : "MedExame"}
@@ -162,7 +176,7 @@ export default function AppLayout() {
                     }}
                     icon={<UserOutlined />}
                   />
-                  {userName}
+                  {`Olá,${userName}`}
                 </Button>
               </Dropdown>
             ) : (

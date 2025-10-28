@@ -9,7 +9,7 @@ export async function getAddressByCep(cepInput: string) {
     `https://viacep.com.br/ws/${cep}/json/`
   );
 
-  if (data.erro) throw new Error("CEP não encontrado no ViaCEP.");
+  if (data.erro) throw new Error("CEP não encontrado.");
   return data;
 }
 

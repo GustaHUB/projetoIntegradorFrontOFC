@@ -13,6 +13,9 @@ import SeusExamesPage from "./pages/exames/seusExames/SeusExames";
 import ptBR from "antd/es/locale/pt_BR";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
+import Medicos from "./pages/medicos/Medicos";
+import Configuracoes from "./pages/configuracoes/Configuracoes";
+import CadastrarExames from "./pages/exames/cadastrarExames/CadastrarExames";
 
 dayjs.locale("pt-br");
 
@@ -28,8 +31,11 @@ function App() {
           <Route element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
               <Route path="/home" element={<Home />} />
-              <Route path="/perfil" element={<Perfil />} />
               <Route path="/exames/seusExames" element={<SeusExamesPage />} />
+              <Route path="/exames/cadastrar" element={<CadastrarExames />} />
+              <Route path="/medicos" element={<Medicos />} />
+              <Route path="/perfil" element={<Perfil />} />
+              <Route path="/configuracoes" element={<Configuracoes />} />
             </Route>
           </Route>
         </Routes>

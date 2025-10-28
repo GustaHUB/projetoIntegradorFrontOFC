@@ -26,3 +26,9 @@ export function dadosUsuario(): Promise<any> {
 export function editarUsuario(payload: any): Promise<any> {
   return handleApi(api.post("/minha-conta", payload));
 }
+
+// DESATIVAR CONTA
+
+export function desativarConta(): Promise<any> {
+  return handleApi(api.post("/minha-conta/deletar"));
+}

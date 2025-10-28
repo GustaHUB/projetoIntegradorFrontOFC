@@ -28,12 +28,24 @@ import {
 } from "../../services/apiInterna/FluxoIdentificacao";
 
 //utils
-import { maskCEP, maskCPF, maskPhoneBR, onlyDigits } from "../../utils/Masks";
+import {
+  maskAltura,
+  maskCEP,
+  maskCPF,
+  maskPhoneBR,
+  onlyDigits,
+} from "../../utils/Masks";
 
 import "./Perfil.scss";
 import { showMessage } from "../../components/messageHelper/ShowMessage";
 import { getAddressByCep } from "../../services/apiExterna/viaCep";
-import { parseMaybeJsonArray } from "../../utils/utlidades";
+import {
+  isValidCEP,
+  isValidCPF,
+  isValidPhoneBR,
+  parseMaybeJsonArray,
+} from "../../utils/utlidades";
+import DesativarContaModal from "../../components/modals/desativarConta/DesativarConta";
 
 export default function Perfil() {
   const [form] = Form.useForm();
@@ -42,6 +54,11 @@ export default function Perfil() {
   const [loadingCep, setLoadingCep] = useState(false);
   const [cepError, setCepError] = useState<string>();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [openModalDesativarConta, setOpenModalDesativarConta] = useState(false);
+
+  const primeiroNomeUsuario = localStorage.getItem("primeiroNomeUsuario");
+  const ultimoNomeUsuario = localStorage.getItem("ultimoNomeUsuario");
 
   const { Title, Paragraph } = Typography;
   const { TextArea } = Input;
@@ -170,6 +187,16 @@ export default function Perfil() {
     }
   };
 
+  const onFinishFailed = () => {
+    showMessage("Preencha os campos obrigatórios destacados.", "warning");
+    form.scrollToField(
+      form.getFieldsError().find((f) => f.errors.length)?.name ?? [],
+      {
+        block: "center",
+      }
+    );
+  };
+
   useEffect(() => {
     async function carregarDados() {
       try {
@@ -247,7 +274,11 @@ export default function Perfil() {
               size={96}
               style={{ backgroundColor: "#e6f4ff", color: "#1677ff" }}
             >
-              {avatarUrl ? null : "USER"}
+              {avatarUrl
+                ? null
+                : `${primeiroNomeUsuario?.[0]?.toUpperCase() ?? ""}${
+                    ultimoNomeUsuario?.[0]?.toUpperCase() ?? ""
+                  }`}
             </Avatar>
 
             <Upload
@@ -287,7 +318,18 @@ export default function Perfil() {
         styles={{ body: { padding: 20, overflow: "hidden" } }}
         style={{ borderRadius: 12 }}
       >
-        <Form layout="vertical" labelWrap form={form} onFinish={handleSubmit}>
+        <DesativarContaModal
+          open={openModalDesativarConta}
+          onClose={() => setOpenModalDesativarConta(false)}
+        />
+
+        <Form
+          layout="vertical"
+          labelWrap
+          form={form}
+          onFinish={handleSubmit}
+          onFinishFailed={onFinishFailed}
+        >
           <Row gutter={[24, 24]}>
             {/* DADOS PESSOAIS */}
             <Col xs={24} lg={14}>
@@ -338,12 +380,23 @@ export default function Perfil() {
                     label="Celular"
                     name="celular"
                     normalize={maskPhoneBR}
-                    rules={[{ required: true }]}
+                    validateTrigger={["onBlur", "onSubmit"]}
+                    rules={[
+                      { required: true, message: "Informe o celular" },
+                      {
+                        validator: (_, value) => {
+                          if (!value) return Promise.resolve();
+                          if (!isValidPhoneBR(value)) {
+                            return Promise.reject("Celular inválido.");
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
                   >
                     <Input placeholder="(45) 99967-9998" />
                   </Form.Item>
                 </Col>
-
                 <Col xs={24} md={12}>
                   <Form.Item
                     label="E-mail"
@@ -354,7 +407,30 @@ export default function Perfil() {
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={12} md={6}>
-                  <Form.Item label="CPF" name="cpf" normalize={maskCPF}>
+                  <Form.Item
+                    label="CPF"
+                    name="cpf"
+                    normalize={maskCPF}
+                    validateTrigger={["onBlur", "onSubmit"]}
+                    rules={[
+                      { required: true, message: "Informe o CPF" },
+                      {
+                        validator: (_, value) => {
+                          const digits = onlyDigits(value || "");
+                          if (!digits) return Promise.resolve();
+                          if (digits.length !== 11) {
+                            return Promise.reject(
+                              "CPF deve conter 11 dígitos."
+                            );
+                          }
+                          if (!isValidCPF(digits)) {
+                            return Promise.reject("CPF inválido.");
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                  >
                     <Input placeholder="000.000.000-00" maxLength={14} />
                   </Form.Item>
                 </Col>
@@ -529,10 +605,26 @@ export default function Perfil() {
                     />
                   </Form.Item>
                 </Col>
-
                 <Col xs={24} sm={8}>
-                  <Form.Item label="Altura (m)" name="altura">
-                    <Input placeholder="Ex.: 1.75" />
+                  <Form.Item
+                    label="Altura (m)"
+                    name="altura"
+                    rules={[
+                      {
+                        validator: (_, value) => {
+                          if (!value) return Promise.resolve();
+                          const num = parseFloat(value);
+                          if (num < 0.5 || num > 2.5)
+                            return Promise.reject(
+                              "Informe uma altura entre 0.50 e 2.50 m"
+                            );
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                    getValueFromEvent={(e) => maskAltura(e.target.value)}
+                  >
+                    <Input placeholder="Ex.: 1.75" inputMode="numeric" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} sm={8}>
@@ -560,31 +652,35 @@ export default function Perfil() {
               </Row>
             </Col>
           </Row>
+          <div className="container-button-perfil">
+            <div className="container-salvar-alterar">
+              <Button
+                className="salvar-dados-button"
+                type="primary"
+                loading={loading}
+                htmlType="submit"
+              >
+                Salvar dados
+              </Button>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 12,
-              marginTop: 8,
-            }}
-          >
-            <Button
-              className="salvar-dados-button"
-              type="primary"
-              loading={loading}
-              htmlType="submit"
-            >
-              Salvar dados
-            </Button>
-
-            <Button
-              className="alterar-senha-button"
-              type="default"
-              htmlType="button"
-            >
-              Alterar senha
-            </Button>
+              <Button
+                className="alterar-senha-button"
+                type="default"
+                htmlType="button"
+              >
+                Alterar senha
+              </Button>
+            </div>
+            <div>
+              <Button
+                className="desativar-conta-senha-button"
+                type="primary"
+                htmlType="button"
+                onClick={() => setOpenModalDesativarConta(true)}
+              >
+                Desativar conta
+              </Button>
+            </div>
           </div>
         </Form>
       </Card>

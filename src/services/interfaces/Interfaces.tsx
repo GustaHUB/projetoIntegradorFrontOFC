@@ -13,7 +13,6 @@ export interface ViaCepAddress {
   erro?: boolean;
 }
 
-
 export interface CadastroResponse {
   code: number;
   message: string;
@@ -33,9 +32,10 @@ export interface LoginResponse {
   message?: string;
   data?: {
     token: string;
+    firstname: string;
+    lastname: string;
   };
   code?: number;
 }
 
 // SALVAR DADOS
-

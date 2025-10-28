@@ -48,7 +48,11 @@ function Login() {
       });
 
       if (response.data?.token) {
+        const primeiroNome = response.data.firstname;
+        const ultimoNome = response.data.lastname;
         localStorage.setItem("token", response.data.token);
+        localStorage.setItem("primeiroNomeUsuario", primeiroNome);
+        localStorage.setItem("ultimoNomeUsuario", ultimoNome);
         showMessage("Login realizado com sucesso!", "success");
         navigate("/home", { replace: true });
       } else {
@@ -85,6 +89,18 @@ function Login() {
             layout="vertical"
             onSubmitCapture={handleSubmit}
           >
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              style={{ display: "none" }}
+            />
+            <input
+              type="password"
+              name="password"
+              autoComplete="new-password"
+              style={{ display: "none" }}
+            />
             <Form.Item label="Login" name="email">
               <Input
                 type="email"
@@ -99,9 +115,10 @@ function Login() {
               <Input.Password
                 value={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
+                name="loginSecret"
+                autoComplete="new-password"
                 placeholder="Digite sua senha"
                 size="large"
-                autoComplete="false"
               />
             </Form.Item>
 

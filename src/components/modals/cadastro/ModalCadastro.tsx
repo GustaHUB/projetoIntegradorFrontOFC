@@ -31,6 +31,7 @@ import {
 
 import "./ModalCadastro.scss";
 import { showMessage } from "../../messageHelper/ShowMessage";
+import { isValidCPF } from "../../../utils/utlidades";
 
 type CadastroModalProps = {
   open: boolean;
@@ -48,7 +49,6 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const generoMap: Record<string, number> = { m: 1, f: 2, o: 3, n: 4 };
-
 
   const handleCepChange = (raw: string) => {
     const masked = maskCEP(raw);
@@ -79,7 +79,6 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
   };
 
   const handleSubmit = async (values: any) => {
-    debugger;
     if (!agree) {
       showMessage("Você precisa aceitar os termos para continuar.", "warning");
       return;
@@ -173,6 +172,18 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
         onFinish={handleSubmit}
         onFinishFailed={onFinishFailed}
       >
+        <input
+          type="text"
+          name="username"
+          autoComplete="username"
+          style={{ display: "none" }}
+        />
+        <input
+          type="password"
+          name="password"
+          autoComplete="new-password"
+          style={{ display: "none" }}
+        />
         {/* DADOS PESSOAIS */}
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
@@ -242,9 +253,25 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
               label="CPF"
               name="cpf"
               normalize={maskCPF}
-              rules={[{ required: true, message: "Informe seu CPF" }]}
+              validateTrigger={["onBlur", "onSubmit"]}
+              rules={[
+                { required: true, message: "Informe o CPF" },
+                {
+                  validator: (_, value) => {
+                    const digits = onlyDigits(value || "");
+                    if (!digits) return Promise.resolve();
+                    if (digits.length !== 11) {
+                      return Promise.reject("CPF deve conter 11 dígitos.");
+                    }
+                    if (!isValidCPF(digits)) {
+                      return Promise.reject("CPF inválido.");
+                    }
+                    return Promise.resolve();
+                  },
+                },
+              ]}
             >
-              <Input placeholder="Digite seu CPF" />
+              <Input placeholder="000.000.000-00" maxLength={14} />
             </Form.Item>
           </Col>
           <Col xs={24} md={6}>
@@ -279,6 +306,8 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
               ]}
             >
               <Input.Password
+                name="loginSecret"
+                autoComplete="new-password"
                 placeholder="Digite a senha"
                 visibilityToggle={{
                   visible: showPass,
@@ -305,6 +334,8 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
               ]}
             >
               <Input.Password
+                name="loginSecret"
+                autoComplete="new-password"
                 placeholder="Repita a senha"
                 visibilityToggle={{
                   visible: showPass2,

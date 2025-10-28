@@ -40,3 +40,15 @@ export function validateCPF(cpfRaw: string) {
   if (rev >= 10) rev = 0;
   return rev === parseInt(cpf[10]);
 }
+
+export function maskAltura(v: string) {
+  let d = onlyDigits(v).slice(0, 3); // até 3 dígitos (210 -> 2.10)
+  if (!d) return "";
+
+  if (d.length === 1) return d; // "1"
+  if (d.length === 2) return `${d[0]}.${d[1]}`; // "17" -> "1.7"
+
+  // length === 3
+  return `${d[0]}.${d.slice(1)}`; // "190" -> "1.90"
+}
+
