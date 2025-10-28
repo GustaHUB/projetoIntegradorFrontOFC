@@ -386,15 +386,19 @@ export default function Perfil() {
                       {
                         validator: (_, value) => {
                           if (!value) return Promise.resolve();
-                          if (!isValidPhoneBR(value)) {
-                            return Promise.reject("Celular inválido.");
+                          if (
+                            !isValidPhoneBR(value, { allowLandline: false })
+                          ) {
+                            return Promise.reject(
+                              "Celular inválido. Use DDD + 9xxxx-xxxx."
+                            );
                           }
                           return Promise.resolve();
                         },
                       },
                     ]}
                   >
-                    <Input placeholder="(45) 99967-9998" />
+                    <Input placeholder="(45) 99999-9999" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} md={12}>
