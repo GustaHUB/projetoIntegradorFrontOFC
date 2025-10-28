@@ -35,8 +35,4 @@ npm run dev
 ```
 - O Vite exibirá uma URL local (ex.: `http://localhost:5173`). Acesse no navegador.
 
-## Variáveis de ambiente
-
-- Por enquanto não tem
-
 
