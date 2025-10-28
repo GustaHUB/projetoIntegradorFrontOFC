@@ -167,7 +167,7 @@ export default function AppLayout() {
                     }}
                     icon={<UserOutlined />}
                   />
-                  {`Olá,${userName}`}
+                  {`Olá, ${userName}`}
                 </Button>
               </Dropdown>
             ) : (
