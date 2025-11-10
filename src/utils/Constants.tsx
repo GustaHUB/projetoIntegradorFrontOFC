@@ -110,8 +110,8 @@ export const SUG_MEDICACAO = [
   "Budesonida (inalatório)",
 ];
 
-// OPÇÕES MENU LATERAL NO LAYOUT PADRÃO
-export const items = [
+// OPÇÕES MENU LATERAL PACIENTE NO LAYOUT PADRÃO
+export const itemsUsuarioPaciente = [
   { key: "/home", icon: <HomeOutlined />, label: "Home" },
   {
     key: "exames",
@@ -126,6 +126,26 @@ export const items = [
     key: "/medicos",
     icon: <SolutionOutlined />,
     label: "Médicos com acesso",
+  },
+  { key: "/perfil", icon: <UserOutlined />, label: "Perfil" },
+  {
+    key: "/configuracoes",
+    icon: <SettingOutlined />,
+    label: "Configurações",
+  },
+];
+
+// OPÇÕES MENU LATERAL MEDICO NO LAYOUT PADRÃO
+export const itemsUsuarioMedico = [
+  { key: "/home", icon: <HomeOutlined />, label: "Home" },
+  {
+    key: "pacientes",
+    icon: <IdcardOutlined />,
+    label: "pacientes",
+    children: [
+      { key: "/pacientes", label: "Meus Pacientes" },
+      { key: "/buscar/paciente", label: "Buscar Paciente" },
+    ],
   },
   { key: "/perfil", icon: <UserOutlined />, label: "Perfil" },
   {
