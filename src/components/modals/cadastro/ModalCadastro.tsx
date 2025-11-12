@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 import { getAddressByCep } from "../../../services/apiExterna/viaCep";
 import { cadastrarUsuario } from "../../../services/apiInterna/FluxoIdentificacao";
 
-//utils
+//validações
 import {
   maskCEP,
   maskCPF,
@@ -28,11 +28,13 @@ import {
   onlyDigits,
   padraoDeSenha,
 } from "../../../utils/Masks";
+import { isValidCPF } from "../../../utils/Utilidades";
+import { showMessage } from "../../messageHelper/ShowMessage";
+
+//modals
+import ModalTermoDeUso from "../termoDeUso/TermoDeUso";
 
 import "./ModalCadastro.scss";
-import { showMessage } from "../../messageHelper/ShowMessage";
-import { isValidCPF } from "../../../utils/Utilidades";
-import ModalTermoDeUso from "../termoDeUso/TermoDeUso";
 
 type CadastroModalProps = {
   open: boolean;
@@ -144,7 +146,6 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
       payload.especialidade = values.especialidade;
     }
 
-    console.log(payload);
     try {
       setLoading(true);
       await cadastrarUsuario(payload as any);

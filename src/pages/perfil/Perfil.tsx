@@ -27,7 +27,6 @@ import {
   editarUsuario,
 } from "../../services/apiInterna/FluxoIdentificacao";
 import { getAddressByCep } from "../../services/apiExterna/viaCep";
-import { buscarCategoria } from "../../services/apiInterna/Categorias";
 
 //utils
 import {
@@ -97,8 +96,8 @@ export default function Perfil() {
         estado: values.estado ?? "",
       };
 
-      const payload = {
-        tipo_usuario: "paciente",
+      const payload: any = {
+        tipo_usuario: tipoUsuario,
         primeiro_nome: values.nome?.trim() ?? null,
         ultimo_nome: values.sobrenome?.trim() ?? null,
         data_nascimento: values.nascimento
@@ -123,6 +122,12 @@ export default function Perfil() {
           values.deficiencias ?? values.desc_deficiencia ?? null,
         endereco,
       };
+
+      if (tipoUsuario === "medico") {
+        payload.crm = values.crm;
+        payload.estado_atuacao = values.estado_atuacao;
+        payload.especialidade = values.especialidade;
+      }
 
       await editarUsuario(payload);
       showMessage("Dados salvos com sucesso!", "success");

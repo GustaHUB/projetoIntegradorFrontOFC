@@ -42,19 +42,16 @@ export interface LoginResponse {
 
 // EXAME
 export interface AdicionarExamePayload {
-  nome_exame: string; 
-  data_realizacao: string; 
-  nome_lab: string; 
-  categorias: string[]; 
-  arquivo_exame: File; 
+  nome_exame: string;
+  data_realizacao: string;
+  nome_lab: string;
+  categorias: string[];
+  arquivo_exame: File;
 }
-
 
 //CATEGORIAS
 
-export interface Categoria {
-
-}
+export interface Categoria {}
 
 export type ExameRow = {
   key: string;
@@ -65,4 +62,33 @@ export type ExameRow = {
   url?: string;
   categoriaId: number;
   rawDate: string;
+};
+
+export type PacienteRow = {
+  key: number;
+  nome: string;
+  cpf: string;
+  dataNascimento: string;
+  rawDate: string;
+  autorizadoEm?: string;
+};
+
+export type SolicitacaoRow = {
+  key: string;
+  nome: string;
+  especialidade: string;
+  crm: string;
+  dataAutorizacao: string;
+  rawDate: string;
+  status: string;
+  solcitacao_id?: number;
+};
+
+export type SolicitacaoAcesso = {
+  id: number;
+  medico: string;
+  especialidade: string;
+  data_pedido: string;
+  crm: string;
+  status: string;
 };

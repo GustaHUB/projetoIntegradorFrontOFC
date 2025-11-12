@@ -1,26 +1,50 @@
+import { useEffect, useState } from "react";
+
+//componentes antd
 import { Carousel, Card, Row, Col } from "antd";
 import {
   FileAddOutlined,
   FileSearchOutlined,
   UserSwitchOutlined,
-  SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
+//apis
+import {
+  aprovarSolicitacao,
+  recusarSolicitacao,
+  verificarSolicitacoes,
+} from "../../services/apiInterna/verificarSolicitacoesAcesso";
+
+//banners
 import banner from "../../assets/banner.png";
+
+//validações
+import { showMessage } from "../../components/messageHelper/ShowMessage";
+
+//modals
+import PedidoAcessoModal from "../../components/modals/modalAceitarSolicitacaoMedico/modalAceitarSolicitacao";
+
+import "./Home.scss";
+import type { SolicitacaoAcesso } from "../../services/interfaces/Interfaces";
+import { StatusAcesso } from "../../utils/Enum";
 
 export default function Home() {
   const navigate = useNavigate();
 
-  const atalhos = [
-    {
-      key: "cadastrar-exame",
-      title: "Cadastrar exame",
-      description: "Envie novos exames em poucos cliques.",
-      icon: <FileAddOutlined style={{ fontSize: 26 }} />,
-      onClick: () => navigate("/exames/cadastrar"),
-    },
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [solicitacao, setSolicitacao] = useState<SolicitacaoAcesso | null>(
+    null
+  );
+  const [loadingPermitir, setLoadingPermitir] = useState(false);
+  const [loadingRecusar, setLoadingRecusar] = useState(false);
+
+  const tipoUsuario = localStorage.getItem("tipo_usuario");
+
+  const atalhosUsuarioPaciente = [
     {
       key: "seus-exames",
       title: "Seus exames",
@@ -29,8 +53,15 @@ export default function Home() {
       onClick: () => navigate("/exames/seusExames"),
     },
     {
+      key: "cadastrar-exame",
+      title: "Cadastrar exame",
+      description: "Envie novos exames em poucos cliques.",
+      icon: <FileAddOutlined style={{ fontSize: 26 }} />,
+      onClick: () => navigate("/exames/cadastrar"),
+    },
+    {
       key: "medicos",
-      title: "Médicos vinculados",
+      title: "Médicos com acesso",
       description: "Gerencie médicos com acesso aos seus exames.",
       icon: <UserSwitchOutlined style={{ fontSize: 26 }} />,
       onClick: () => navigate("/medicos"),
@@ -42,67 +73,141 @@ export default function Home() {
       icon: <UserOutlined style={{ fontSize: 26 }} />,
       onClick: () => navigate("/perfil"),
     },
+  ];
+
+  const atalhosUsuarioMedico = [
     {
-      key: "configuracoes",
-      title: "Configurações",
-      description: "Ajuste notificações, segurança e preferências.",
-      icon: <SettingOutlined style={{ fontSize: 26 }} />,
-      onClick: () => navigate("/configuracoes"),
+      key: "meus-pacientes",
+      title: "Meus pacientes",
+      description: "Consulte todos os exames já enviados.",
+      icon: <FileSearchOutlined style={{ fontSize: 26 }} />,
+      onClick: () => navigate("/meus/pacientes"),
+    },
+    {
+      key: "buscar-paciente",
+      title: "Buscar paciente",
+      description: "Busque um paciente e solicite acesso.",
+      icon: <FileAddOutlined style={{ fontSize: 26 }} />,
+      onClick: () => navigate("/buscar/paciente"),
+    },
+    {
+      key: "perfil",
+      title: "Perfil",
+      description: "Atualize seus dados pessoais e de acesso.",
+      icon: <UserOutlined style={{ fontSize: 26 }} />,
+      onClick: () => navigate("/perfil"),
     },
   ];
 
+  useEffect(() => {
+    async function carregarSolicitacoes() {
+      try {
+        setLoading(true);
+        if (tipoUsuario !== "paciente") return;
+
+        const response = await verificarSolicitacoes();
+        const lista = response?.data || [];
+
+        const aprovadas = lista.filter((s: any) => s.status === StatusAcesso.PENDENTE);
+
+        if (aprovadas.length > 0) {
+          const s = aprovadas[0];
+
+          const nomeMedico = `${s.primeiro_nome ?? ""} ${
+            s.ultimo_nome ?? ""
+          }`.trim();
+          const crm = `CRM-${s.estado_atuacao ?? ""} ${s.crm ?? ""}`.trim();
+
+          setSolicitacao({
+            id: s.solcitacao_id,
+            medico: nomeMedico || "Médico",
+            especialidade: s.especialidade ?? "Não informado",
+            data_pedido: dayjs(s.data_criacao).format("DD-MM-YYYY"),
+            crm: crm ?? "",
+            status: s.status,
+          });
+
+          setModalOpen(true);
+        }
+      } catch (err: any) {
+        console.error(err);
+        showMessage("Erro ao carregar solicitações de acesso.", "error");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarSolicitacoes();
+  }, [tipoUsuario]);
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSolicitacao(null);
+  };
+
+  const handlePermitir = async () => {
+    if (!solicitacao) return;
+    try {
+      setLoadingPermitir(true);
+      await aprovarSolicitacao({ solicitacao_id: solicitacao.id });
+
+      showMessage("Acesso permitido com sucesso.", "success");
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+      showMessage("Erro ao permitir acesso.", "error");
+    } finally {
+      setLoadingPermitir(false);
+    }
+  };
+
+  const handleRecusar = async () => {
+    if (!solicitacao) return;
+    try {
+      setLoadingRecusar(true);
+      await recusarSolicitacao({ solicitacao_id: solicitacao.id });
+
+      showMessage("Solicitação recusada.", "success");
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+      showMessage("Erro ao recusar solicitação.", "error");
+    } finally {
+      setLoadingRecusar(false);
+    }
+  };
+
+  const atalhosAtuais =
+    tipoUsuario === "paciente"
+      ? atalhosUsuarioPaciente
+      : tipoUsuario === "medico"
+      ? atalhosUsuarioMedico
+      : [];
+
   return (
     <>
-      <div style={{ marginBottom: 16 }}>
-        <h1 style={{ margin: 0 }}>Home</h1>
-        <p style={{ margin: "4px 0 0", color: "#666" }}>
-          Acesse rapidamente as principais funcionalidades.
-        </p>
+      <div className="home-header">
+        <h1>Home</h1>
+        <p>Acesse rapidamente as principais funcionalidades.</p>
       </div>
 
-      <Carousel autoplay arrows draggable={false} dotPosition="bottom" autoplaySpeed={5000} >
-        <div>
-          <img
-            src={banner}
-            alt="Banner MedExame"
-            style={{
-              width: "100%",
-              height: "300px",
-              objectFit: "cover",
-              borderRadius: 12,
-            }}
-          />
-        </div>
-        <div>
-          <img
-            src={banner}
-            alt="Banner MedExame"
-            style={{
-              width: "100%",
-              height: "300px",
-              objectFit: "cover",
-              borderRadius: 12,
-            }}
-          />
-        </div>
-        <div>
-          <img
-            src={banner}
-            alt="Banner MedExame"
-            style={{
-              width: "100%",
-              height: "300px",
-              objectFit: "cover",
-              borderRadius: 12,
-            }}
-          />
-        </div>
+      <Carousel
+        autoplay
+        arrows
+        draggable={false}
+        dotPosition="bottom"
+        autoplaySpeed={5000}
+      >
+        {[1, 2, 3].map((i) => (
+          <div key={i}>
+            <img src={banner} alt="Banner MedExame" className="home-banner" />
+          </div>
+        ))}
       </Carousel>
 
-      {/* Atalhos rápidos */}
-      <div style={{ marginTop: 24 }}>
+      <div className="home-atalhos-container">
         <Row gutter={[16, 16]}>
-          {atalhos.map((item) => (
+          {atalhosAtuais.map((item) => (
             <Col
               key={item.key}
               xs={24}
@@ -111,41 +216,11 @@ export default function Home() {
               lg={6}
               onClick={item.onClick}
             >
-              <Card
-                hoverable
-                style={{ height: "100%", borderRadius: 12 }}
-                bodyStyle={{ display: "flex", gap: 12, alignItems: "center" }}
-              >
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "#f5f5f5",
-                  }}
-                >
-                  {item.icon}
-                </div>
+              <Card hoverable className="home-card">
+                <div className="home-card-icon">{item.icon}</div>
                 <div>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      fontSize: 16,
-                      marginBottom: 4,
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 13,
-                      color: "#777",
-                      lineHeight: 1.4,
-                    }}
-                  >
+                  <div className="home-card-title">{item.title}</div>
+                  <div className="home-card-description">
                     {item.description}
                   </div>
                 </div>
@@ -154,6 +229,21 @@ export default function Home() {
           ))}
         </Row>
       </div>
+
+      {solicitacao && (
+        <PedidoAcessoModal
+          open={modalOpen}
+          onClose={handleCloseModal}
+          medico={solicitacao.medico}
+          especialidade={solicitacao.especialidade}
+          dataPedido={solicitacao.data_pedido}
+          crm={solicitacao.crm}
+          onPermitir={handlePermitir}
+          onRecusar={handleRecusar}
+          loadingPermitir={loadingPermitir}
+          loadingRecusar={loadingRecusar}
+        />
+      )}
     </>
   );
 }

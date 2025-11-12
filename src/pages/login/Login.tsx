@@ -14,8 +14,11 @@ import CadastroModal from "../../components/modals/cadastro/ModalCadastro";
 import RecuperarSenha from "../../components/modals/recuperarSenha/RecuperarSenha";
 
 import "antd/dist/reset.css";
-import "./Login.scss";
+
+//validações
 import { showMessage } from "../../components/messageHelper/ShowMessage";
+
+import "./Login.scss";
 
 function Login() {
   const [userLogin, setUserLogin] = useState("");

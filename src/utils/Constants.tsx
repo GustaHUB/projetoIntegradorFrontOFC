@@ -128,11 +128,6 @@ export const itemsUsuarioPaciente = [
     label: "Médicos com acesso",
   },
   { key: "/perfil", icon: <UserOutlined />, label: "Perfil" },
-  {
-    key: "/configuracoes",
-    icon: <SettingOutlined />,
-    label: "Configurações",
-  },
 ];
 
 // OPÇÕES MENU LATERAL MEDICO NO LAYOUT PADRÃO
@@ -143,14 +138,9 @@ export const itemsUsuarioMedico = [
     icon: <IdcardOutlined />,
     label: "pacientes",
     children: [
-      { key: "/pacientes", label: "Meus Pacientes" },
+      { key: "/meus/pacientes", label: "Meus Pacientes" },
       { key: "/buscar/paciente", label: "Buscar Paciente" },
     ],
   },
   { key: "/perfil", icon: <UserOutlined />, label: "Perfil" },
-  {
-    key: "/configuracoes",
-    icon: <SettingOutlined />,
-    label: "Configurações",
-  },
 ];

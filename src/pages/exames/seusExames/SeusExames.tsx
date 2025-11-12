@@ -11,6 +11,7 @@ import {
   DatePicker,
   Tabs,
   type TabsProps,
+  Grid,
 } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
@@ -23,23 +24,24 @@ import {
   buscarExames,
   deletarExame,
 } from "../../../services/apiInterna/Exames";
-import { api } from "../../../services/api";
 import { buscarCategoria } from "../../../services/apiInterna/Categorias";
 
 //interface
 import type { ExameRow } from "../../../services/interfaces/Interfaces";
 
-//componentes
+//validações
 import { showMessage } from "../../../components/messageHelper/ShowMessage";
 
 //modals
 import CadatrarCategoria from "../../../components/modals/cadastrarCategoria/CadastrarCategoria";
 import AvisoExclusaoModal from "../../../components/modals/avisoExclusão/AvisoExclusao";
+import VisualizarExameModal from "../../../components/modals/visualizarExame/VisualizarExameModal";
 
 import "./SeusExames.scss";
 
 const { Title, Paragraph } = Typography;
 const { RangePicker } = DatePicker;
+const { useBreakpoint } = Grid;
 
 export default function SeusExames() {
   const [loading, setLoading] = useState(false);
@@ -55,6 +57,12 @@ export default function SeusExames() {
   const [openModalCadastrarCategoria, setModalCadastrarCategoria] =
     useState(false);
 
+  const [openModalVisualizar, setOpenModalVisualizar] = useState(false);
+  const [exameVisualizar, setExameVisualizar] = useState<ExameRow | null>(null);
+
+  const screens = useBreakpoint();
+  const isMobile = !screens.xl;
+
   const closeModalCadastrarCat = () => {
     setModalCadastrarCategoria(false);
   };
@@ -64,31 +72,16 @@ export default function SeusExames() {
   };
 
   // AO CLICAR EM VER EXAME
-  async function verExame(record: ExameRow) {
-    try {
-      if (!record.url) return;
-
-      const urlAbsoluta = record.url;
-
-      const resp = await api.get(urlAbsoluta, {
-        responseType: "blob",
-      });
-
-      const contentType =
-        resp.headers["content-type"] || "application/octet-stream";
-      const blob = new Blob([resp.data], { type: contentType });
-      const fileURL = URL.createObjectURL(blob);
-
-      window.open(fileURL, "_blank", "noopener,noreferrer");
-
-      setTimeout(() => URL.revokeObjectURL(fileURL), 60_000);
-    } catch (e) {
-      showMessage(
-        "Não foi possível abrir o exame. Verifique seu login e tente novamente.",
-        "error"
-      );
-    }
+  function verExame(record: ExameRow) {
+    if (!record.url) return;
+    setExameVisualizar(record);
+    setOpenModalVisualizar(true);
   }
+
+  const closeModalVisualizar = () => {
+    setOpenModalVisualizar(false);
+    setExameVisualizar(null);
+  };
 
   // FUNÇÃO PARA DELETAR EXAME
   async function excluirExameSelecionado() {
@@ -188,7 +181,6 @@ export default function SeusExames() {
   // CARREGAR CATEGORIAS
   useEffect(() => {
     async function carregarCategorias() {
-      console.log(tab);
       try {
         setLoading(true);
         const categorias = await buscarCategoria();
@@ -236,18 +228,25 @@ export default function SeusExames() {
       sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
       defaultSortOrder: "ascend",
     },
-    { title: "Categoria", dataIndex: "categoria", key: "categoria" },
+    {
+      title: "Categoria",
+      dataIndex: "categoria",
+      key: "categoria",
+      responsive: ["md"],
+    },
     {
       title: "Data realização",
       dataIndex: "dataRealizacao",
       key: "dataRealizacao",
+      responsive: ["sm"],
       sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
       defaultSortOrder: "ascend",
     },
-    { title: "Local", dataIndex: "local", key: "local" },
+    { title: "Local", dataIndex: "local", key: "local", responsive: ["xl"] },
     {
       title: "Ações",
       key: "acoes",
+      responsive: ["xl"],
       render: (_, record) => (
         <Space>
           <Button
@@ -282,7 +281,6 @@ export default function SeusExames() {
           pode buscar por nome, status e período.
         </Paragraph>
       </Card>
-
       <Card style={{ marginTop: 16 }}>
         <div
           style={{
@@ -326,19 +324,79 @@ export default function SeusExames() {
           dataSource={dataFiltrada}
           loading={loading}
           pagination={{ pageSize: 10 }}
+          expandable={
+            isMobile
+              ? {
+                  columnWidth: 40,
+                  expandedRowRender: (record) => (
+                    <div
+                      style={{
+                        padding: "8px 0",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 4,
+                      }}
+                    >
+                      <div>
+                        <strong>Categoria: </strong>
+                        {record.categoria || "-"}
+                      </div>
+                      <div>
+                        <strong>Data realização: </strong>
+                        {record.dataRealizacao || "-"}
+                      </div>
+                      <div>
+                        <strong>Local: </strong>
+                        {record.local || "-"}
+                      </div>
+                      <div style={{ marginTop: 4 }}>
+                        <Space>
+                          <Button
+                            danger
+                            size="small"
+                            style={{
+                              borderColor: "#ef4444",
+                              color: "#ef4444",
+                            }}
+                            onClick={() => {
+                              setExameSelecionadoId(String(record.key));
+                              setOpenModalAvisoExclusao(true);
+                            }}
+                          >
+                            Deletar
+                          </Button>
+                          <Button
+                            size="small"
+                            className="button-ver-exame"
+                            type="primary"
+                            onClick={() => verExame(record)}
+                            disabled={!record.url}
+                          >
+                            Ver exame
+                          </Button>
+                        </Space>
+                      </div>
+                    </div>
+                  ),
+                }
+              : undefined
+          }
         />
       </Card>
-
       <CadatrarCategoria
         open={openModalCadastrarCategoria}
         onClose={() => closeModalCadastrarCat()}
         onSuccess={carregarCategorias}
       />
-
       <AvisoExclusaoModal
         onClose={closeModalAvisoExclusao}
         open={openModalAvisoExclusao}
         onSubmit={excluirExameSelecionado}
+      />
+      <VisualizarExameModal
+        open={openModalVisualizar}
+        onClose={closeModalVisualizar}
+        exame={exameVisualizar}
       />
     </div>
   );

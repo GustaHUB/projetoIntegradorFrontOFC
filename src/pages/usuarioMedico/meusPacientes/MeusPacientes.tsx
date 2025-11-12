@@ -9,13 +9,13 @@ import type { ColumnsType } from "antd/es/table";
 import dayjs, { Dayjs } from "dayjs";
 
 //api
-import { buscarCategoria } from "../../services/apiInterna/Categorias";
+import { buscarCategoria } from "../../../services/apiInterna/Categorias";
 
 //interface
-import type { ExameRow } from "../../services/interfaces/Interfaces";
+import type { PacienteRow } from "../../../services/interfaces/Interfaces";
 
 //componentes
-import { showMessage } from "../../components/messageHelper/ShowMessage";
+import { showMessage } from "../../../components/messageHelper/ShowMessage";
 
 const { Title, Paragraph } = Typography;
 
@@ -37,15 +37,23 @@ export default function SeusExames() {
     carregarMedicos();
   }, []);
 
-  const colunas: ColumnsType<ExameRow> = [
+  const colunas: ColumnsType<PacienteRow> = [
     { title: "Nome", dataIndex: "nome", key: "nome" },
-    { title: "Especialidade", dataIndex: "categoria", key: "categoria" },
-    { title: "CRM", dataIndex: "crm", key: "crm" },
+    { title: "CPF", dataIndex: "cpf", key: "cpf" },
     {
-      title: "Autorizado em",
-      dataIndex: "dataAutorizacao",
-      key: "dataAutorizacao",
-      sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
+      title: "Data de nascimento",
+      dataIndex: "dataNascimento",
+      key: "dataNascimento",
+      sorter: (a, b) =>
+        dayjs(a.dataNascimento).valueOf() - dayjs(b.dataNascimento).valueOf(),
+      defaultSortOrder: "ascend",
+    },
+    {
+      title: "Data de nascimento",
+      dataIndex: "dataNascimento",
+      key: "dataNascimento",
+      sorter: (a, b) =>
+        dayjs(a.autorizadoEm).valueOf() - dayjs(b.autorizadoEm).valueOf(),
       defaultSortOrder: "ascend",
     },
     {
@@ -54,11 +62,12 @@ export default function SeusExames() {
       render: (_, record) => (
         <Space>
           <Button
-            danger
+            className="button-solicitar-acesso"
             size="small"
-            onClick={() => console.log("deletar", record.key)}
+            type="primary"
+            onClick={() => {}}
           >
-            Cancelar acesso
+            Solicitar Acesso
           </Button>
         </Space>
       ),
@@ -68,10 +77,11 @@ export default function SeusExames() {
   return (
     <div>
       <Card>
-        <Title>Seus Exames</Title>
+        <Title>Meus pacientes</Title>
         <Paragraph>
-          Use as categorias acima da tabela para filtrar os resultados. Você
-          pode buscar por nome, status e período.
+          Aqui você encontra os pacientes que concederam acesso e as
+          solicitações pendentes. Você pode visualizar os exames autorizados ou
+          encerrar o acesso quando não for mais necessário.
         </Paragraph>
       </Card>
 

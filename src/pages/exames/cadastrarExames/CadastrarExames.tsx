@@ -88,10 +88,6 @@ export default function SeusExames() {
 
       setSubmitting(true);
 
-      console.log(file);
-
-      console.log(values.categorias);
-
       await adicionarExame({
         nome_exame: values.exame,
         nome_lab: values.local,
