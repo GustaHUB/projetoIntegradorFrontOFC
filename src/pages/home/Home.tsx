@@ -27,22 +27,27 @@ import { showMessage } from "../../components/messageHelper/ShowMessage";
 //modals
 import PedidoAcessoModal from "../../components/modals/modalAceitarSolicitacaoMedico/modalAceitarSolicitacao";
 
-import "./Home.scss";
+//interfaces
 import type { SolicitacaoAcesso } from "../../services/interfaces/Interfaces";
+
+//enum
 import { StatusAcesso } from "../../utils/Enum";
+
+import "./Home.scss";
 
 export default function Home() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [solicitacao, setSolicitacao] = useState<SolicitacaoAcesso | null>(
-    null
-  );
   const [loadingPermitir, setLoadingPermitir] = useState(false);
   const [loadingRecusar, setLoadingRecusar] = useState(false);
 
   const tipoUsuario = localStorage.getItem("tipo_usuario");
+
+  const [solicitacao, setSolicitacao] = useState<SolicitacaoAcesso | null>(
+    null
+  );
 
   const atalhosUsuarioPaciente = [
     {
@@ -99,6 +104,53 @@ export default function Home() {
     },
   ];
 
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSolicitacao(null);
+  };
+
+  //FUNÇÃO PARA ACEITAR SOLICITAÇÃO
+  const handlePermitir = async () => {
+    if (!solicitacao) return;
+    try {
+      setLoadingPermitir(true);
+      await aprovarSolicitacao({ solicitacao_id: solicitacao.id });
+
+      showMessage("Acesso permitido com sucesso.", "success");
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+      showMessage("Erro ao permitir acesso.", "error");
+    } finally {
+      setLoadingPermitir(false);
+    }
+  };
+
+  //FUNÇÃO PARA RECUSAR SOLICITAÇÃO
+  const handleRecusar = async () => {
+    if (!solicitacao) return;
+    try {
+      setLoadingRecusar(true);
+      await recusarSolicitacao({ solicitacao_id: solicitacao.id });
+
+      showMessage("Solicitação recusada.", "success");
+      handleCloseModal();
+    } catch (err) {
+      console.error(err);
+      showMessage("Erro ao recusar solicitação.", "error");
+    } finally {
+      setLoadingRecusar(false);
+    }
+  };
+
+  const atalhosAtuais =
+    tipoUsuario === "paciente"
+      ? atalhosUsuarioPaciente
+      : tipoUsuario === "medico"
+      ? atalhosUsuarioMedico
+      : [];
+
+  //FUNÇÃO PARA CARREGAR SOLICITAÇÕES E EXIBIR MODAL NA HOME.
   useEffect(() => {
     async function carregarSolicitacoes() {
       try {
@@ -108,7 +160,9 @@ export default function Home() {
         const response = await verificarSolicitacoes();
         const lista = response?.data || [];
 
-        const aprovadas = lista.filter((s: any) => s.status === StatusAcesso.PENDENTE);
+        const aprovadas = lista.filter(
+          (s: any) => s.status === StatusAcesso.PENDENTE
+        );
 
         if (aprovadas.length > 0) {
           const s = aprovadas[0];
@@ -139,50 +193,6 @@ export default function Home() {
 
     carregarSolicitacoes();
   }, [tipoUsuario]);
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setSolicitacao(null);
-  };
-
-  const handlePermitir = async () => {
-    if (!solicitacao) return;
-    try {
-      setLoadingPermitir(true);
-      await aprovarSolicitacao({ solicitacao_id: solicitacao.id });
-
-      showMessage("Acesso permitido com sucesso.", "success");
-      handleCloseModal();
-    } catch (err) {
-      console.error(err);
-      showMessage("Erro ao permitir acesso.", "error");
-    } finally {
-      setLoadingPermitir(false);
-    }
-  };
-
-  const handleRecusar = async () => {
-    if (!solicitacao) return;
-    try {
-      setLoadingRecusar(true);
-      await recusarSolicitacao({ solicitacao_id: solicitacao.id });
-
-      showMessage("Solicitação recusada.", "success");
-      handleCloseModal();
-    } catch (err) {
-      console.error(err);
-      showMessage("Erro ao recusar solicitação.", "error");
-    } finally {
-      setLoadingRecusar(false);
-    }
-  };
-
-  const atalhosAtuais =
-    tipoUsuario === "paciente"
-      ? atalhosUsuarioPaciente
-      : tipoUsuario === "medico"
-      ? atalhosUsuarioMedico
-      : [];
 
   return (
     <>

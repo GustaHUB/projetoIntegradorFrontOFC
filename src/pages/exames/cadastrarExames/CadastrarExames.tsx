@@ -34,10 +34,10 @@ const { Dragger } = Upload;
 
 export default function SeusExames() {
   const [loading, setLoading] = useState(false);
-  const [form] = Form.useForm();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [errarArquivoEmpty, setErrorArquivoEmpty] = useState("");
+  const [form] = Form.useForm();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [cat, setCat] = useState<{ value: string; label: string }[]>([]);
 
   // VALIDAR ARQUIVO

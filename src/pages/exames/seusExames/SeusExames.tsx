@@ -46,19 +46,20 @@ const { useBreakpoint } = Grid;
 export default function SeusExames() {
   const [loading, setLoading] = useState(false);
   const [openModalAvisoExclusao, setOpenModalAvisoExclusao] = useState(false);
+  const [openModalVisualizar, setOpenModalVisualizar] = useState(false);
+  const [openModalCadastrarCategoria, setModalCadastrarCategoria] =
+    useState(false);
+
   const [rows, setRows] = useState<ExameRow[]>([]);
+  const [cat, setCat] = useState<{ value: string; label: string }[]>([]);
   const [tab, setTab] = useState<string>("Todos");
-  const [categoriaFiltro, setCategoriaFiltro] = useState<string | undefined>();
+
   const [exameSelecionadoId, setExameSelecionadoId] = useState<string | null>(
     null
   );
   const [periodo, setPeriodo] = useState<[Dayjs, Dayjs] | null>(null);
-  const [cat, setCat] = useState<{ value: string; label: string }[]>([]);
-  const [openModalCadastrarCategoria, setModalCadastrarCategoria] =
-    useState(false);
-
-  const [openModalVisualizar, setOpenModalVisualizar] = useState(false);
   const [exameVisualizar, setExameVisualizar] = useState<ExameRow | null>(null);
+  const [categoriaFiltro, setCategoriaFiltro] = useState<string | undefined>();
 
   const screens = useBreakpoint();
   const isMobile = !screens.xl;
@@ -147,6 +148,59 @@ export default function SeusExames() {
     [cat]
   );
 
+  //COLUNAS TABELA
+  const colunas: ColumnsType<ExameRow> = [
+    {
+      title: "Exame",
+      dataIndex: "exame",
+      key: "exame",
+      sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
+      defaultSortOrder: "ascend",
+    },
+    {
+      title: "Categoria",
+      dataIndex: "categoria",
+      key: "categoria",
+      responsive: ["md"],
+    },
+    {
+      title: "Data realização",
+      dataIndex: "dataRealizacao",
+      key: "dataRealizacao",
+      responsive: ["sm"],
+      sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
+      defaultSortOrder: "ascend",
+    },
+    { title: "Local", dataIndex: "local", key: "local", responsive: ["xl"] },
+    {
+      title: "Ações",
+      key: "acoes",
+      responsive: ["xl"],
+      render: (_, record) => (
+        <Space>
+          <Button
+            danger
+            style={{ borderColor: "#ef4444", color: "#ef4444" }}
+            onClick={() => {
+              setExameSelecionadoId(String(record.key));
+              setOpenModalAvisoExclusao(true);
+            }}
+          >
+            Deletar
+          </Button>
+          <Button
+            className="button-ver-exame"
+            type="primary"
+            onClick={() => verExame(record)}
+            disabled={!record.url}
+          >
+            Ver exame
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   useEffect(() => {
     async function carregarExames() {
       try {
@@ -219,58 +273,6 @@ export default function SeusExames() {
   useEffect(() => {
     carregarCategorias();
   }, []);
-
-  const colunas: ColumnsType<ExameRow> = [
-    {
-      title: "Exame",
-      dataIndex: "exame",
-      key: "exame",
-      sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
-      defaultSortOrder: "ascend",
-    },
-    {
-      title: "Categoria",
-      dataIndex: "categoria",
-      key: "categoria",
-      responsive: ["md"],
-    },
-    {
-      title: "Data realização",
-      dataIndex: "dataRealizacao",
-      key: "dataRealizacao",
-      responsive: ["sm"],
-      sorter: (a, b) => dayjs(a.rawDate).valueOf() - dayjs(b.rawDate).valueOf(),
-      defaultSortOrder: "ascend",
-    },
-    { title: "Local", dataIndex: "local", key: "local", responsive: ["xl"] },
-    {
-      title: "Ações",
-      key: "acoes",
-      responsive: ["xl"],
-      render: (_, record) => (
-        <Space>
-          <Button
-            danger
-            style={{ borderColor: "#ef4444", color: "#ef4444" }}
-            onClick={() => {
-              setExameSelecionadoId(String(record.key));
-              setOpenModalAvisoExclusao(true);
-            }}
-          >
-            Deletar
-          </Button>
-          <Button
-            className="button-ver-exame"
-            type="primary"
-            onClick={() => verExame(record)}
-            disabled={!record.url}
-          >
-            Ver exame
-          </Button>
-        </Space>
-      ),
-    },
-  ];
 
   return (
     <div>

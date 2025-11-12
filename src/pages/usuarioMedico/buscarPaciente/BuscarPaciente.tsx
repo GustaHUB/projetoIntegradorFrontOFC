@@ -41,6 +41,7 @@ export default function BuscarPaciente() {
   const screens = useBreakpoint();
   const isMobile = !screens.xl;
 
+  //FUNÇÃO PARA BUSCAR USUÁRIO PACIENTE
   const handleBuscar = async (values: { cpf: string }) => {
     setLoading(true);
     try {
@@ -87,6 +88,7 @@ export default function BuscarPaciente() {
     }
   };
 
+  //FUNÇÃO PARA SOLICITAR ACESSO AO PERFIL DO USUÁRIO
   const handleSolicitarAcesso = async (pacienteId: string | number) => {
     setLoading(true);
     try {

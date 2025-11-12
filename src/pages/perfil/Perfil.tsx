@@ -222,7 +222,6 @@ export default function Perfil() {
 
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
-      {/* Cabeçalho do perfil */}
       <Card styles={{ body: { padding: 20 } }}>
         <Flex align="center" gap={30} wrap="wrap">
           <div style={{ position: "relative", width: 96, height: 96 }}>
@@ -270,7 +269,6 @@ export default function Perfil() {
         </Flex>
       </Card>
 
-      {/* Formulário */}
       <Card
         styles={{ body: { padding: 20, overflow: "hidden" } }}
         style={{ borderRadius: 12 }}

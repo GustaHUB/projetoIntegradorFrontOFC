@@ -22,21 +22,6 @@ const { Title, Paragraph } = Typography;
 export default function SeusExames() {
   const [loading, setLoading] = useState(false);
 
-  // CARREGAR MEDICOS
-  useEffect(() => {
-    async function carregarMedicos() {
-      try {
-        setLoading(true);
-        const categorias = await buscarCategoria();
-      } catch (err: any) {
-        showMessage("Erro ao carregar categorias.", "error");
-      } finally {
-        setLoading(false);
-      }
-    }
-    carregarMedicos();
-  }, []);
-
   const colunas: ColumnsType<PacienteRow> = [
     { title: "Nome", dataIndex: "nome", key: "nome" },
     { title: "CPF", dataIndex: "cpf", key: "cpf" },
@@ -73,6 +58,21 @@ export default function SeusExames() {
       ),
     },
   ];
+
+  // CARREGAR PACIENTES OBS: AINDA NÃO TEM
+  // useEffect(() => {
+  //   async function carregarMedicos() {
+  //     try {
+  //       setLoading(true);
+  //       const categorias = await buscarCategoria();
+  //     } catch (err: any) {
+  //       showMessage("Erro ao carregar categorias.", "error");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   carregarMedicos();
+  // }, []);
 
   return (
     <div>

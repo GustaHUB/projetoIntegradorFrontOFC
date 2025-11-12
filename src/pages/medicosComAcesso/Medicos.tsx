@@ -27,7 +27,7 @@ import "./Medicos.scss";
 const { Title, Paragraph } = Typography;
 
 export default function SeusExames() {
-  const [rows, setRows] = useState<SolicitacaoRow[]>([]);
+  const tipoUsuario = localStorage.getItem("tipo_usuario");
 
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -36,8 +36,7 @@ export default function SeusExames() {
 
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] =
     useState<SolicitacaoRow | null>(null);
-
-  const tipoUsuario = localStorage.getItem("tipo_usuario");
+  const [rows, setRows] = useState<SolicitacaoRow[]>([]);
 
   const handleAbrirModal = (record: SolicitacaoRow) => {
     setSolicitacaoSelecionada(record);
