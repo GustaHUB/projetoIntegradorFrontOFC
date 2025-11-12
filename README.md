@@ -46,7 +46,6 @@ docker compose up -d --build
 
 # dentro do container app
 docker exec -it medihub bash
-cd /var/www/html
 
 # migra e semeia com config explícita
 php vendor/bin/phinx migrate -e development --configuration=/var/www/html/phinx.php -vvv
