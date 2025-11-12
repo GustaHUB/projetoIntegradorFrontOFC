@@ -175,7 +175,7 @@ export default function BuscarPaciente() {
                 ]}
               >
                 <Input
-                  placeholder="Digite o CPF, ex: 000.000.000-00"
+                  placeholder="Ex: 000.000.000-00"
                   maxLength={14}
                   className="input-buscar-paciente"
                 />
