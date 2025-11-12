@@ -168,7 +168,7 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
       width={1000}
       title={null}
       rootClassName="cadastro-modal"
-      styles={{ content: { borderRadius: 14, padding: 24, paddingTop: 44 } }}
+      styles={{ content: { borderRadius: 14 } }}
       maskClosable={false}
     >
       <div className="cad-header">

@@ -34,9 +34,9 @@ export default function SeusExames() {
       defaultSortOrder: "ascend",
     },
     {
-      title: "Data de nascimento",
-      dataIndex: "dataNascimento",
-      key: "dataNascimento",
+      title: "Autorizado em",
+      dataIndex: "autorizadoEm",
+      key: "autorizadoEm",
       sorter: (a, b) =>
         dayjs(a.autorizadoEm).valueOf() - dayjs(b.autorizadoEm).valueOf(),
       defaultSortOrder: "ascend",

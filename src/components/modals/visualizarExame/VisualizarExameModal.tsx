@@ -93,6 +93,7 @@ export default function VisualizarExameModal({
       footer={null}
       width={1500}
       centered
+      rootClassName="visualizar-exame"
       afterClose={() => {
         if (fileUrl) URL.revokeObjectURL(fileUrl);
         setFileUrl(null);

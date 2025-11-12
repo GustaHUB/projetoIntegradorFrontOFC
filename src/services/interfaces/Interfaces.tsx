@@ -69,7 +69,7 @@ export type PacienteRow = {
   nome: string;
   cpf: string;
   dataNascimento: string;
-  rawDate: string;
+  rawDate?: string;
   autorizadoEm?: string;
 };
 
