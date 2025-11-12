@@ -170,6 +170,7 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
       rootClassName="cadastro-modal"
       styles={{ content: { borderRadius: 14 } }}
       maskClosable={false}
+      destroyOnHidden
     >
       <div className="cad-header">
         <h2>Cadastro</h2>
