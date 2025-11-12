@@ -165,10 +165,10 @@ export default function CadastroModal({ open, onClose }: CadastroModalProps) {
       afterClose={() => form.resetFields()}
       footer={null}
       centered
-      width={890}
+      width={1000}
       title={null}
       rootClassName="cadastro-modal"
-      styles={{ content: { borderRadius: 14, padding: 24 } }}
+      styles={{ content: { borderRadius: 14, padding: 24, paddingTop: 44 } }}
       maskClosable={false}
     >
       <div className="cad-header">

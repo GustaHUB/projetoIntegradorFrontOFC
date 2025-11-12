@@ -256,9 +256,14 @@ export default function SeusExames() {
   async function carregarCategorias() {
     try {
       setLoading(true);
-      const categorias = await buscarCategoria();
+
+      const resp = await buscarCategoria();
+      const data = Array.isArray(resp?.data) ? resp.data : [];
+      
+      const invertida = [...data].reverse();
+
       setCat(
-        categorias.data.map((e: any) => ({
+        invertida.map((e: any) => ({
           value: String(e.id ?? e.categoria_id),
           label: e.nome ?? e.nome_categoria,
         }))
